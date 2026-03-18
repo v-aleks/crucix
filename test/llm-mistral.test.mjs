@@ -50,7 +50,7 @@ describe('MistralProvider', () => {
     const mockResponse = {
       choices: [{ message: { content: 'Hello from Mistral' } }],
       usage: { prompt_tokens: 10, completion_tokens: 5 },
-      model: 'mistral-medium',
+      model: 'mistral-large-latest',
     };
     const originalFetch = globalThis.fetch;
     globalThis.fetch = mock.fn(() =>
@@ -61,14 +61,14 @@ describe('MistralProvider', () => {
       assert.equal(result.text, 'Hello from Mistral');
       assert.equal(result.usage.inputTokens, 10);
       assert.equal(result.usage.outputTokens, 5);
-      assert.equal(result.model, 'mistral-medium');
+      assert.equal(result.model, 'mistral-large-latest');
     } finally {
       globalThis.fetch = originalFetch;
     }
   });
 
   it('should send correct request format', async () => {
-    const provider = new MistralProvider({ apiKey: 'sk-test-key', model: 'mistral-medium' });
+    const provider = new MistralProvider({ apiKey: 'sk-test-key', model: 'mistral-large-latest' });
     let capturedUrl, capturedOpts;
     const originalFetch = globalThis.fetch;
     globalThis.fetch = mock.fn((url, opts) => {
@@ -79,7 +79,7 @@ describe('MistralProvider', () => {
         json: () => Promise.resolve({
           choices: [{ message: { content: 'ok' } }],
           usage: { prompt_tokens: 1, completion_tokens: 1 },
-          model: 'mistral-medium',
+          model: 'mistral-large-latest',
         }),
       });
     });
@@ -91,7 +91,7 @@ describe('MistralProvider', () => {
       assert.equal(headers['Content-Type'], 'application/json');
       assert.equal(headers['Authorization'], 'Bearer sk-test-key');
       const body = JSON.parse(capturedOpts.body);
-      assert.equal(body.model, 'mistral-medium');
+      assert.equal(body.model, 'mistral-large-latest');
       assert.equal(body.max_tokens, 2048);
       assert.equal(body.messages[0].role, 'system');
       assert.equal(body.messages[0].content, 'system prompt');
